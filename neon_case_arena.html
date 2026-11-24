@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#080b16"><title>NEON CASE ARENA</title>
+<style>
+:root{--bg:#080b16;--panel:#10172a;--line:#243455;--cyan:#23e7ff;--pink:#ff3fd2;--gold:#ffd166;--muted:#9aabc9;--green:#45f0a5}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#182b52 0,#080b16 55%);color:#eef5ff;font-family:Inter,system-ui,-apple-system,Arial,sans-serif;min-height:100vh}
+button{font:inherit;color:inherit;cursor:pointer;border:1px solid #2d4770;background:#15213b;border-radius:12px;padding:11px 14px;font-weight:800}button:active{transform:scale(.98)}button.primary{background:linear-gradient(100deg,#087d9b,#5634a8);border-color:#36eaff;box-shadow:0 0 18px #1bdfff30}button:disabled{opacity:.45;cursor:not-allowed}
+header{position:sticky;top:0;z-index:5;background:#080b16eF;backdrop-filter:blur(15px);border-bottom:1px solid #233452;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.logo{font-size:17px;font-weight:1000;letter-spacing:1.5px}.logo span{color:var(--cyan);text-shadow:0 0 14px #23e7ff}
+.balance{border:1px solid #66552b;background:#2a2415;padding:8px 11px;border-radius:20px;color:var(--gold);font-weight:900;white-space:nowrap}
+main{max-width:1000px;margin:auto;padding:16px 13px 90px}.hero{text-align:center;padding:19px 8px 20px}.eyebrow{color:var(--cyan);font-size:11px;letter-spacing:3px;font-weight:900}.hero h1{font-size:clamp(27px,7vw,46px);margin:8px 0;background:linear-gradient(90deg,#fff,#23e7ff,#ff55d9);color:transparent;background-clip:text}.hero p{color:var(--muted);font-size:13px;margin:0}
+.tabs{display:flex;gap:7px;overflow:auto;padding:7px 0 14px;scrollbar-width:none}.tabs button{white-space:nowrap;font-size:12px;padding:9px 12px}.tabs button.active{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 15px #23e7ff25}
+.panel{background:linear-gradient(145deg,#111a30,#0c1222);border:1px solid var(--line);border-radius:18px;padding:15px;margin-bottom:14px;box-shadow:0 12px 35px #0004}.section-title{display:flex;justify-content:space-between;align-items:center;margin:0 0 12px;font-weight:950}.muted{color:var(--muted);font-size:12px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.case{position:relative;overflow:hidden;border-radius:15px;padding:13px 10px;background:linear-gradient(145deg,#18294a,#111426);border:1px solid #33486e;text-align:center}.case:before{content:"";position:absolute;width:110px;height:110px;border-radius:50%;background:var(--glow,#23e7ff);filter:blur(55px);opacity:.25;top:-45px;left:calc(50% - 55px)}.case-art{height:90px;display:grid;place-items:center;font-size:55px;filter:drop-shadow(0 0 14px var(--glow,#23e7ff));position:relative}.case h3{font-size:14px;margin:4px 0}.case .muted{margin-bottom:9px}.case button{width:100%;font-size:12px;padding:10px 6px}
+.weapon{display:flex;align-items:center;gap:10px;padding:9px;border:1px solid #293d60;border-radius:12px;background:#101a2e}.weapon .emoji{font-size:29px;width:43px;text-align:center}.weapon b{display:block;font-size:12px}.weapon small{color:var(--muted);font-size:10px}.rarity{font-size:9px;font-weight:900;letter-spacing:1px}.common{color:#b6c5d8}.rare{color:#4ab9ff}.epic{color:#c18bff}.legendary{color:var(--gold)}.mythic{color:#ff65dc}
+#reel{height:125px;overflow:hidden;position:relative;border:1px solid #38547b;border-radius:13px;background:repeating-linear-gradient(90deg,#16233b 0 90px,#10192b 90px 94px);display:flex;align-items:center;margin:14px 0}
+#reel:after{content:"";position:absolute;left:50%;top:0;bottom:0;width:3px;background:var(--cyan);box-shadow:0 0 15px var(--cyan);z-index:2}
+.reel-track{display:flex;gap:5px;transform:translateX(0);will-change:transform}.reel-item{width:88px;flex:0 0 88px;text-align:center;padding:12px 4px;border-radius:9px;background:#1b2b47;border:1px solid #3a4f71}.reel-item .emoji{font-size:32px}.reel-item small{display:block;font-size:9px;margin-top:5px}
+.result{text-align:center;min-height:25px;font-weight:900}.big-win{animation:jackpot 1s ease-in-out 3;color:var(--gold);text-shadow:0 0 20px #ffb300;font-size:22px}
+@keyframes jackpot{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.08);filter:brightness(1.8)}}
+.hidden{display:none!important}.actions{display:flex;gap:8px;flex-wrap:wrap}.actions>*{flex:1}.item-list{display:grid;gap:8px}.item-right{margin-left:auto;text-align:right}.tag{font-size:9px;border:1px solid #405577;padding:4px 7px;border-radius:20px;color:#b9c8e2}
+.game-card{padding:13px;border:1px solid #2a4267;border-radius:14px;background:#111b30}.game-card h3{margin:0 0 5px;font-size:14px}.game-card p{margin:0 0 12px;color:var(--muted);font-size:11px}
+footer{text-align:center;color:#7385a5;font-size:10px;padding:15px}
+.overlay{position:fixed;inset:0;background:#02040bdc;z-index:10;display:none;place-items:center;padding:20px}.overlay.show{display:grid}.modal{width:min(420px,100%);text-align:center;background:linear-gradient(145deg,#172747,#0b1020);border:1px solid #3d5d8a;border-radius:20px;padding:22px;box-shadow:0 0 55px #19dfff35}.modal .drop{font-size:68px;margin:8px}.modal h2{margin:5px}.modal p{color:var(--muted);font-size:12px}
+@media(min-width:650px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.case-art{height:115px}.panel{padding:20px}}
+</style></head>
+<body>
+<header><div class="logo">NEON <span>CASE</span> ARENA</div><div class="balance">◈ <span id="coins">2500</span></div></header>
+<main>
+<div class="hero"><div class="eyebrow">SEASON 01 • NEON RUSH</div><h1>OPEN. UPGRADE. DOMINATE.</h1><p>Твоя арена. Твои скины. Твой стиль.</p></div>
+<nav class="tabs" id="tabs">
+<button class="active" data-tab="cases">КЕЙСЫ</button><button data-tab="battle">БАТЛЫ</button><button data-tab="upgrade">АПГРЕЙД</button><button data-tab="market">РЫНОК</button><button data-tab="games">РЕЖИМЫ</button><button data-tab="inventory">ИНВЕНТАРЬ</button>
+</nav>
+<section id="cases" class="view">
+<div class="panel"><div class="section-title">🔥 Коллекция кейсов <span class="tag">6 CASES</span></div><div class="grid" id="caseGrid"></div></div>
+<div class="panel"><div class="section-title">🎯 Открытие кейса <span class="muted">анимация прокрутки</span></div><div class="muted" id="caseHint">Выбери кейс выше, чтобы начать.</div><div id="reel" class="hidden"><div class="reel-track" id="track"></div></div><div class="result" id="result"></div><div class="actions"><button id="openBtn" class="primary" disabled>ОТКРЫТЬ КЕЙС</button><button id="fastBtn" disabled>БЫСТРО</button></div></div>
+</section>
+<section id="battle" class="view hidden"><div class="panel"><div class="section-title">⚔️ Кейс-батл <span class="tag">VS BOT</span></div><p class="muted">Собери раунд из одинаковых кейсов. Победитель забирает виртуальный банк. Онлайн-матчмейкинг здесь показан локальным демо-соперником.</p><div class="grid" id="battleCases"></div><div class="actions" style="margin-top:12px"><button class="primary" id="startBattle">НАЧАТЬ БАТЛ • 2 ИГРОКА</button></div><div id="battleResult" class="result" style="margin-top:14px"></div></div></section>
+<section id="upgrade" class="view hidden"><div class="panel"><div class="section-title">⚡ Апгрейдер</div><p class="muted">Выбери предмет из инвентаря и цель. Успех добавит новый предмет, неудача сжигает выбранный предмет (только в демо).</p><div id="upgradePick" class="item-list"></div><div class="muted" style="margin:12px 0 6px">Шанс успеха: <b id="chance">35%</b></div><input id="chanceRange" type="range" min="10" max="75" value="35" style="width:100%"><button id="upgradeBtn" class="primary" style="width:100%;margin-top:12px" disabled>ЗАПУСТИТЬ АПГРЕЙД</button><div id="upgradeResult" class="result" style="margin-top:12px"></div></div></section>
+<section id="market" class="view hidden"><div class="panel"><div class="section-title">🛒 Торговая площадка <span class="tag">P2P DEMO</span></div><p class="muted">Предметы выставлены условными ботами. Покупки и продажи меняют только баланс внутри этой страницы.</p><div class="item-list" id="marketList"></div></div><div class="panel"><div class="section-title">Выставить свой предмет</div><div id="sellPick" class="item-list"></div><p class="muted">Цена задаётся автоматически по редкости.</p><button id="sellBtn" class="primary" style="width:100%" disabled>ВЫСТАВИТЬ НА РЫНОК</button></div></section>
+<section id="games" class="view hidden"><div class="panel"><div class="section-title">🎮 Дополнительные режимы</div><div class="grid">
+<div class="game-card"><h3>🎡 Neon Wheel</h3><p>Крути колесо и получай виртуальные бонусы или косметические предметы.</p><button onclick="spinWheel()">КРУТИТЬ • 100 ◈</button><div id="wheelResult" class="muted"></div></div>
+<div class="game-card"><h3>🧩 Pattern Rush</h3><p>Запомни последовательность цветов и повтори её.</p><button onclick="startPattern()">НАЧАТЬ</button><div id="patternResult" class="muted"></div></div>
+<div class="game-card"><h3>🏆 Daily Mission</h3><p>Одна ежедневная миссия в этой демо-сессии.</p><button onclick="claimDaily()">ЗАБРАТЬ 150 ◈</button><div id="dailyResult" class="muted"></div></div>
+</div></div></section>
+<section id="inventory" class="view hidden"><div class="panel"><div class="section-title">🎒 Твой инвентарь <span class="tag" id="invCount">0 ITEMS</span></div><div id="inventoryList" class="item-list"></div></div></section>
+<footer>NEON CASE ARENA • DEMO BUILD 1.0<br>Только виртуальные монеты. Нет реальных ставок, платежей или вывода денег.</footer>
+</main>
+<div class="overlay" id="modal"><div class="modal"><div class="eyebrow">DROP CONFIRMED</div><div class="drop" id="dropEmoji">🔫</div><h2 id="dropName">Предмет получен</h2><p id="dropDesc"></p><button class="primary" onclick="closeModal()">ЗАБРАТЬ</button></div></div>
+<script>
+const $=id=>document.getElementById(id);
+let coins=2500, selectedCase=0, inventory=[], selectedItem=null, market=[], daily=false, opening=false;
+const items=[
+{name:'Viper-9 | Электрошок',emoji:'🔫',rarity:'common',value:90},
+{name:'Astra Rifle | Полярный лёд',emoji:'🧊',rarity:'rare',value:260},
+{name:'Phantom SMG | Неоновый след',emoji:'🟣',rarity:'rare',value:310},
+{name:'Nova Shotgun | Красный импульс',emoji:'🔴',rarity:'epic',value:650},
+{name:'Spectre Blade | Лунный металл',emoji:'🗡️',rarity:'epic',value:850},
+{name:'Dragon Core | Плазменный шторм',emoji:'🐉',rarity:'legendary',value:1800},
+{name:'Eclipse Sniper | Чёрное солнце',emoji:'🌑',rarity:'legendary',value:2400},
+{name:'Singularity | Абсолютный ноль',emoji:'💠',rarity:'mythic',value:6000}
+];
+const cases=[
+{name:'NEON STARTER',emoji:'📦',cost:150,glow:'#23e7ff',pool:[0,1,2,3]},
+{name:'CYBER STRIKE',emoji:'🧰',cost:350,glow:'#a16bff',pool:[1,2,3,4,5]},
+{name:'FROST BITE',emoji:'❄️',cost:650,glow:'#52baff',pool:[1,3,4,5,6]},
+{name:'DRAGON CORE',emoji:'🐲',cost:1000,glow:'#ff8a38',pool:[3,4,5,6,7]},
+{name:'VOID LEGENDS',emoji:'🪐',cost:1600,glow:'#ed56e9',pool:[4,5,6,7]},
+{name:'APEX DROP',emoji:'👑',cost:2500,glow:'#ffd166',pool:[5,6,7]}
+];
+function update(){ $('coins').textContent=coins.toLocaleString('ru-RU');$('invCount').textContent=inventory.length+' ITEMS';renderInventory();renderUpgrade();renderSell();}
+function rarityName(r){return {common:'ОБЫЧНЫЙ',rare:'РЕДКИЙ',epic:'ЭПИЧЕСКИЙ',legendary:'ЛЕГЕНДАРНЫЙ',mythic:'МИФИЧЕСКИЙ'}[r]}
+function weaponHTML(it,i,extra=''){return `<div class="weapon"><div class="emoji">${it.emoji}</div><div><b>${it.name}</b><small class="${it.rarity}">${rarityName(it.rarity)}</small></div><div class="item-right"><b>◈ ${it.value}</b>${extra}</div></div>`}
+function renderCases(){ $('caseGrid').innerHTML=cases.map((c,i)=>`<div class="case" style="--glow:${c.glow}"><div class="case-art">${c.emoji}</div><h3>${c.name}</h3><div class="muted">◈ ${c.cost}</div><button onclick="selectCase(${i})" class="${selectedCase===i?'primary':''}">ВЫБРАТЬ</button></div>`).join('');$('battleCases').innerHTML=cases.slice(0,4).map((c,i)=>`<div class="case"><div class="case-art">${c.emoji}</div><h3>${c.name}</h3><div class="muted">◈ ${c.cost} / игрок</div><button onclick="battleCase=${i};document.querySelectorAll('#battleCases button').forEach((b,j)=>b.classList.toggle('primary',j===i))">ВЫБРАТЬ</button></div>`).join('')}
+function selectCase(i){selectedCase=i;renderCases();$('caseHint').textContent=cases[i].name+' • стоимость '+cases[i].cost+' ◈';$('openBtn').disabled=false;$('fastBtn').disabled=false;$('result').textContent='';}
+function pick(pool){let weights=pool.map(i=>({i,w:items[i].rarity==='common'?42:items[i].rarity==='rare'?28:items[i].rarity==='epic'?17:items[i].rarity==='legendary'?10:3}));let total=weights.reduce((s,x)=>s+x.w,0),r=Math.random()*total;for(let x of weights){r-=x.w;if(r<=0)return items[x.i]}return items[pool[0]]}
+function reelHTML(pool){return Array.from({length:23},(_,i)=>{let it=items[pool[i%pool.length]];return `<div class="reel-item"><div class="emoji">${it.emoji}</div><small>${it.name.split('|')[0]}<br><span class="${it.rarity}">${rarityName(it.rarity)}</span></small></div>`}).join('')}
+function openCase(fast=false){if(opening||selectedCase===null)return;let c=cases[selectedCase];if(coins<c.cost){$('result').textContent='Не хватает виртуальных монет.';return}opening=true;coins-=c.cost;update();$('reel').classList.remove('hidden');$('track').innerHTML=reelHTML(c.pool);$('track').style.transition='none';$('track').style.transform='translateX(0)';$('result').textContent='';let win=pick(c.pool),idx=17;let target=-(idx*93)+((window.innerWidth/2)-44);requestAnimationFrame(()=>{ $('track').style.transition=`transform ${fast?1.1:5.2}s cubic-bezier(.08,.72,.12,1)`;$('track').style.transform=`translateX(${target}px)`;});setTimeout(()=>{inventory.push({...win,id:Date.now()+Math.random()});update();$('result').textContent=`ВЫПАЛО: ${win.name} • ◈ ${win.value}`;if(['legendary','mythic'].includes(win.rarity)){ $('result').classList.add('big-win');setTimeout(()=>$('result').classList.remove('big-win'),3100);confetti();}showDrop(win);opening=false;},fast?1200:5350)}
+function confetti(){document.body.animate([{filter:'brightness(1)'},{filter:'brightness(1.7)'},{filter:'brightness(1)'}],{duration:850});}
+function showDrop(it){$('dropEmoji').textContent=it.emoji;$('dropName').textContent=it.name;$('dropDesc').textContent=rarityName(it.rarity)+' • ориентировочная ценность ◈ '+it.value;$('modal').classList.add('show')}
+function closeModal(){$('modal').classList.remove('show')}
+$('openBtn').onclick=()=>openCase(false);$('fastBtn').onclick=()=>openCase(true);
+function renderInventory(){$('inventoryList').innerHTML=inventory.length?inventory.map((it,i)=>weaponHTML(it,i,`<br><button style="margin-top:5px;padding:5px 8px;font-size:10px" onclick="sellItem(${i})">ПРОДАТЬ</button>`)).join(''):'<div class="muted">Пока пусто. Открой первый кейс!</div>'}
+function sellItem(i){let it=inventory.splice(i,1)[0];coins+=Math.round(it.value*.65);update();}
+function renderUpgrade(){ $('upgradePick').innerHTML=inventory.length?inventory.map((it,i)=>`<div onclick="selectedItem=${i};renderUpgrade()" style="cursor:pointer;outline:${selectedItem===i?'2px solid var(--cyan)':'none'};border-radius:12px">${weaponHTML(it,i)}</div>`).join(''):'<div class="muted">Нужен предмет из инвентаря.</div>';$('upgradeBtn').disabled=selectedItem===null||!inventory[selectedItem];}
+$('chanceRange').oninput=e=>$('chance').textContent=e.target.value+'%';
+$('upgradeBtn').onclick=()=>{if(selectedItem===null||!inventory[selectedItem])return;let base=inventory.splice(selectedItem,1)[0];selectedItem=null;let chance=+$('chanceRange').value;let candidates=items.filter(x=>x.value>base.value*1.35);let win=Math.random()*100<chance&&candidates.length; if(win){let it={...candidates[Math.floor(Math.random()*candidates.length)],id:Date.now()};inventory.push(it);$('upgradeResult').textContent='УСПЕХ! Получен '+it.name; if(it.rarity==='legendary'||it.rarity==='mythic'){$('upgradeResult').classList.add('big-win');confetti();}}else $('upgradeResult').textContent='Неудача. Предмет потерян в симуляции.';update();};
+function renderSell(){ $('sellPick').innerHTML=inventory.length?inventory.map((it,i)=>`<div onclick="sellSelected=${i};renderSell()" style="cursor:pointer;outline:${sellSelected===i?'2px solid var(--cyan)':'none'};border-radius:12px">${weaponHTML(it,i)}</div>`).join(''):'<div class="muted">Нет предметов для выставления.</div>';$('sellBtn').disabled=sellSelected===null||!inventory[sellSelected];}
+let sellSelected=null;function renderMarket(){if(!market.length)market=[{...items[2],id:'m1',price:420},{...items[4],id:'m2',price:1100},{...items[5],id:'m3',price:2200}];$('marketList').innerHTML=market.map((it,i)=>`<div class="weapon"><div class="emoji">${it.emoji}</div><div><b>${it.name}</b><small class="${it.rarity}">${rarityName(it.rarity)} • продавец: NEON_BOT</small></div><div class="item-right"><b>◈ ${it.price}</b><br><button style="margin-top:5px;padding:5px 8px;font-size:10px" onclick="buyMarket(${i})">КУПИТЬ</button></div></div>`).join('')}
+function buyMarket(i){let it=market[i];if(coins<it.price){alert('Не хватает монет');return}coins-=it.price;inventory.push({...it,id:Date.now()});market.splice(i,1);update();renderMarket()}
+$('sellBtn').onclick=()=>{if(sellSelected===null||!inventory[sellSelected])return;let it=inventory.splice(sellSelected,1)[0];market.push({...it,id:'u'+Date.now(),price:Math.round(it.value*.9),seller:'YOU'});sellSelected=null;update();renderMarket()}
+function spinWheel(){if(coins<100){$('wheelResult').textContent='Не хватает монет';return}coins-=100;let n=Math.random();let bonus=n<.65?0:n<.9?100:350;coins+=bonus;$('wheelResult').textContent=bonus?'БОНУС +'+bonus+' ◈':'На этот раз без бонуса';update()}
+function startPattern(){let seq=Array.from({length:3},()=>['🔵','🟣','🟢','🟡'][Math.floor(Math.random()*4)]);$('patternResult').textContent='Запомни: '+seq.join(' ');setTimeout(()=>{let ans=prompt('Повтори последовательность эмодзи через пробел:\n🔵 🟣 🟢 🟡');if(ans&&ans.replaceAll(' ','')===seq.join('')){coins+=200;$('patternResult').textContent='Идеально! +200 ◈';update()}else $('patternResult').textContent='Не совпало. Попробуй ещё раз.'},1700)}
+function claimDaily(){if(daily){$('dailyResult').textContent='Миссия уже выполнена в этой сессии.';return}daily=true;coins+=150;$('dailyResult').textContent='Миссия выполнена! +150 ◈';update()}
+let battleCase=0;
+$('startBattle').onclick=()=>{let c=cases[battleCase];if(coins<c.cost){$('battleResult').textContent='Не хватает монет.';return}coins-=c.cost*2;let a=pick(c.pool),b=pick(c.pool);let total=a.value+b.value;let yours=a.value>=b.value;let payout=yours?c.cost*2+Math.max(0,total-c.cost*2)*.35:0;if(yours){coins+=Math.round(payout);inventory.push(a,b)}else inventory.push(a);$('battleResult').innerHTML=`Ты: ${a.emoji} ${a.name} (${a.value})<br>Бот: ${b.emoji} ${b.name} (${b.value})<br><b>${yours?'ПОБЕДА! +'+Math.round(payout)+' ◈':'БОТ ПОБЕДИЛ — твой предмет сохранён в демо'}</b>`;update()};
+$('tabs').addEventListener('click',e=>{let b=e.target.closest('button[data-tab]');if(!b)return;document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.view').forEach(x=>x.classList.toggle('hidden',x.id!==b.dataset.tab));if(b.dataset.tab==='market')renderMarket();});
+renderCases();renderMarket();update();
+</script></body></html>
