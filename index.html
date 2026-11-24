@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>NEON CASE ARENA</title>
+<style>
+:root{--bg:#090b18;--panel:#141a30;--cyan:#36e5ff;--pink:#ff3eaa;--gold:#ffd166;--text:#f4f7ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#26336b 0,#10152b 38%,var(--bg) 75%);color:var(--text);font:16px -apple-system,BlinkMacSystemFont,Arial,sans-serif;min-height:100vh}
+header{text-align:center;padding:22px 12px 12px}h1{margin:0;font-size:27px;letter-spacing:2px;text-shadow:0 0 14px var(--cyan)}header p{color:#aeb9d9;margin:7px 0}
+.stats{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:8px 12px 16px}.pill{background:#151e38;border:1px solid #34456f;border-radius:999px;padding:9px 15px;font-weight:700}
+nav{display:flex;gap:8px;overflow:auto;padding:0 12px 12px;justify-content:center}button{font:inherit;color:var(--text);border:1px solid #43557e;background:#202b4a;border-radius:13px;padding:12px 15px;font-weight:700;cursor:pointer;touch-action:manipulation}
+button:active{transform:scale(.96)}button.primary{background:linear-gradient(100deg,#087fba,#7639b8);border:0;box-shadow:0 0 18px #258fff55}button:disabled{opacity:.45}
+main{padding:0 13px 28px;max-width:720px;margin:auto}.panel{background:linear-gradient(145deg,#171e37ee,#10162bee);border:1px solid #34436b;border-radius:20px;padding:17px;margin:10px 0;box-shadow:0 12px 30px #0005}
+h2{margin:0 0 12px;font-size:20px}.muted{color:#aeb9d9}.casegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.case{padding:12px 6px;text-align:center;min-height:125px}.emoji{font-size:36px;display:block;margin:6px}.case strong{display:block}.case small{color:#b8c5e9}
+.stage{min-height:130px;display:grid;place-items:center;text-align:center;border:1px dashed #455b8b;border-radius:16px;margin:12px 0;padding:15px;background:#0d1428}.reel{display:flex;gap:10px;align-items:center;justify-content:center;font-size:38px;animation:slide .55s linear infinite alternate}.reel.stop{animation:none}@keyframes slide{from{transform:translateX(-16px)}to{transform:translateX(16px)}}
+.result{font-size:23px;font-weight:900;color:var(--gold);text-shadow:0 0 15px #ffbb33}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.actions button{flex:1;min-width:120px}
+.inventory{display:grid;gap:8px}.item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px;background:#0d1428;border-radius:12px}.item button{padding:8px 11px}
+.notice{min-height:24px;color:var(--cyan);font-weight:700;margin-top:10px}.hidden{display:none!important}.upgrade-wheel{font-size:64px;display:inline-block;transition:transform 1.2s cubic-bezier(.15,.7,.2,1)}.spin{transform:rotate(720deg)}footer{text-align:center;color:#8290b7;font-size:12px;padding:10px}
+</style>
+</head>
+<body>
+<header><h1>NEON CASE ARENA</h1><p>Открывай кейсы · собирай предметы · побеждай бота</p></header>
+<div class="stats"><div class="pill">🪙 Баланс: <span id="balance">5000</span></div><div class="pill">🎒 Предметов: <span id="count">0</span></div></div>
+<nav>
+<button data-tab="cases">📦 Кейсы</button><button data-tab="battle">⚔️ Батл</button><button data-tab="upgrade">🚀 Апгрейдер</button><button data-tab="inventory">🎒 Инвентарь</button>
+</nav>
+<main>
+<section id="cases" class="panel">
+<h2>Выбери кейс</h2>
+<div class="casegrid">
+<button class="case" data-case="starter"><span class="emoji">📦</span><strong>Стартовый</strong><small>250 🪙</small></button>
+<button class="case" data-case="neon"><span class="emoji">💜</span><strong>Неоновый</strong><small>700 🪙</small></button>
+<button class="case" data-case="premium"><span class="emoji">💎</span><strong>Премиум</strong><small>1500 🪙</small></button>
+</div>
+<div class="stage"><div><div id="reel" class="reel">📦　💜　💎</div><div id="caseResult" class="muted">Выбери кейс, чтобы начать</div></div></div>
+<div class="actions"><button id="openCase" class="primary" disabled>Открыть выбранный кейс</button></div>
+<div id="caseNotice" class="notice"></div>
+</section>
+<section id="battle" class="panel hidden">
+<h2>Кейс-батл против бота</h2><p class="muted">Оба открывают по одному виртуальному кейсу. Побеждает большая стоимость предмета.</p>
+<div class="stage"><div id="battleStage">⚔️ Готов к битве?</div></div>
+<button id="battleBtn" class="primary">Начать батл · 500 🪙</button><div id="battleNotice" class="notice"></div>
+</section>
+<section id="upgrade" class="panel hidden">
+<h2>Апгрейдер</h2><p class="muted">Поставь предмет и попробуй улучшить его. Шанс успеха — 35%.</p>
+<div class="stage"><div><div id="wheel" class="upgrade-wheel">⚙️</div><div id="upgradeInfo">Выбери предмет из инвентаря ниже</div></div></div>
+<div id="upgradeChoices" class="inventory"></div><div id="upgradeNotice" class="notice"></div>
+</section>
+<section id="inventory" class="panel hidden">
+<h2>Инвентарь</h2><div id="items" class="inventory"><p class="muted">Пока пусто. Открой кейс!</p></div>
+</section>
+</main>
+<footer>Только виртуальные монеты и предметы. Без реальных денег.</footer>
+<script>
+(function(){
+'use strict';
+let balance=5000, inventory=[], selectedCase=null, nextId=1;
+const $=id=>document.getElementById(id);
+const prizes=[
+{name:'Синий скин',emoji:'🔹',value:120,weight:40},
+{name:'Фиолетовый скин',emoji:'🟣',value:300,weight:30},
+{name:'Красный скин',emoji:'🔴',value:650,weight:18},
+{name:'Золотой скин',emoji:'🟡',value:1200,weight:9},
+{name:'Алмазный скин',emoji:'💎',value:3000,weight:3}
+];
+const costs={starter:250,neon:700,premium:1500};
+function notify(id,msg){$(id).textContent=msg}
+function render(){
+$('balance').textContent=balance.toLocaleString('ru-RU');$('count').textContent=inventory.length;
+$('items').innerHTML='';
+if(!inventory.length){$('items').innerHTML='<p class="muted">Пока пусто. Открой кейс!</p>'}
+inventory.forEach(item=>{
+const row=document.createElement('div');row.className='item';
+const label=document.createElement('span');label.textContent=item.emoji+' '+item.name+' · '+item.value+' 🪙';
+const sell=document.createElement('button');sell.textContent='Продать · '+Math.floor(item.value*.8);
+sell.addEventListener('click',()=>{balance+=Math.floor(item.value*.8);inventory=inventory.filter(x=>x.id!==item.id);render();notify('caseNotice','Предмет продан! Монеты начислены.')});
+row.append(label,sell);$('items').append(row);
+});
+renderUpgradeChoices();
+}
+function drawPrize(){let n=Math.random()*100;for(const p of prizes){n-=p.weight;if(n<=0)return {...p,id:nextId++}}return {...prizes[0],id:nextId++}}
+document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));$(b.dataset.tab).classList.remove('hidden')}));
+document.querySelectorAll('[data-case]').forEach(b=>b.addEventListener('click',()=>{selectedCase=b.dataset.case;document.querySelectorAll('[data-case]').forEach(x=>x.style.outline='');b.style.outline='2px solid #36e5ff';$('openCase').disabled=balance<costs[selectedCase];notify('caseNotice','Выбран кейс: '+b.querySelector('strong').textContent)}));
+$('openCase').addEventListener('click',()=>{
+if(!selectedCase)return;const cost=costs[selectedCase];if(balance<cost){notify('caseNotice','Не хватает монет!');return}
+balance-=cost;$('openCase').disabled=true;$('reel').classList.remove('stop');$('reel').textContent='🔹　🟣　🔴　🟡　💎';$('caseResult').textContent='Прокрутка...';notify('caseNotice','');
+setTimeout(()=>{const item=drawPrize();inventory.push(item);$('reel').classList.add('stop');$('reel').textContent=item.emoji;$('caseResult').innerHTML='<div class="result">'+item.name+'</div><div>'+item.value+' 🪙</div>';render();$('openCase').disabled=balance<cost;notify('caseNotice','Предмет добавлен в инвентарь!')},1500);
+});
+$('battleBtn').addEventListener('click',()=>{
+if(balance<500){notify('battleNotice','Не хватает 500 монет!');return}
+balance-=500;$('battleBtn').disabled=true;$('battleStage').textContent='🎲 Открываем кейсы...';notify('battleNotice','');
+setTimeout(()=>{const a=drawPrize(),b=drawPrize();inventory.push(a);$('battleStage').innerHTML='Ты: '+a.emoji+' '+a.name+' ('+a.value+')<br>Бот: '+b.emoji+' '+b.name+' ('+b.value+')<br><br><strong class="result">'+(a.value>b.value?'ПОБЕДА!':a.value<b.value?'БОТ ПОБЕДИЛ':'НИЧЬЯ')+'</strong>';if(a.value>b.value)balance+=500;render();$('battleBtn').disabled=false;notify('battleNotice','Твой предмет сохранён в инвентаре.')},1400);
+});
+function renderUpgradeChoices(){
+$('upgradeChoices').innerHTML='';
+if(!inventory.length){$('upgradeChoices').innerHTML='<p class="muted">Сначала получи предмет в кейсе.</p>';return}
+inventory.forEach(item=>{const b=document.createElement('button');b.textContent=item.emoji+' '+item.name+' · '+item.value+' 🪙';b.addEventListener('click',()=>upgrade(item.id));$('upgradeChoices').append(b)});
+}
+function upgrade(id){
+const item=inventory.find(x=>x.id===id);if(!item)return;const wheel=$('wheel');wheel.classList.remove('spin');void wheel.offsetWidth;wheel.classList.add('spin');$('upgradeInfo').textContent='Пробуем улучшить '+item.name+'...';notify('upgradeNotice','');
+setTimeout(()=>{if(Math.random()<.35){const better=prizes.filter(p=>p.value>item.value).sort((a,b)=>a.value-b.value)[0]||prizes[4];Object.assign(item,{name:better.name,emoji:better.emoji,value:better.value});$('upgradeInfo').textContent='УСПЕХ! '+item.emoji+' '+item.name}else{inventory=inventory.filter(x=>x.id!==id);$('upgradeInfo').textContent='Неудача! Предмет сгорел.'}render();notify('upgradeNotice','Результат обновлён.')},1250);
+}
+render();
+})();
+</script>
+</body></html>
